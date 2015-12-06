@@ -5,7 +5,7 @@
 
  First, you will need to install
  1. Maven  (for server code)
- 2. PHP 5  (for the web server)
+ 2. PHP 5.4.0 or higher  (for the web server)
 
 
  Once you cloned the repo, run the following commands under
