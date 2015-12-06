@@ -1,0 +1,28 @@
+
+-------------------------------------------
+		README 
+-------------------------------------------
+
+ First, you will need to install
+ 1. Maven  (for server code)
+ 2. PHP 5  (for the web server)
+
+
+ Once you cloned the repo, run the following commands under
+ dataset/ folder :
+
+ 1. mvn dependency:copy-dependencies (Downloads dependencies)
+
+ 2. mvn compile (Compiles java server code)
+
+ 3. sh startServer.sh  (starts java xmlrpc server)
+
+ 4. php -S localhost:5000
+
+ 5. Create a file data/problems.txt, and add an empty json list to it ("[]").
+    (This is a bit hacky, we can change it later)
+
+ The server is now live, and can accept questions, and show existing 
+ questions. Open your browser and migrate to 
+
+ localhost:5000/src/main/java/server/index.php   
