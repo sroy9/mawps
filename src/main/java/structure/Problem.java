@@ -10,5 +10,6 @@ public class Problem {
 	public String sQuestion;
 	public List<String> lEquations;
 	public List<Double> lSolutions;
+	public int templateNumber;
 
 }
