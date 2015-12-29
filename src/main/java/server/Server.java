@@ -21,7 +21,8 @@ import utils.Params;
 
 public class Server {
     
-    public String addProblem(String question, String equations, String answers, String templates) {
+    public String addProblem(String question, String equations, 
+    		String answers, String templates) {
         if(question.trim().equals("") && equations.trim().equals("") &&
            answers.trim().equals("") && templates.trim().equals("")) {
             return "";
@@ -44,18 +45,15 @@ public class Server {
             }
             for(String val : templates.split("\n")) {
                 if(val.trim().equals("")) continue;
-                prob.templateNumber.add(Integer.parseInt(val.trim()));
+                prob.templateNumber = Integer.parseInt(val.trim());
             }
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
+            List<Problem> allProblems = Reader.readGenericFormatProblems(Params.problemsFile);
             allProblems.add(prob);
             Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
             String json = gson.toJson(allProblems);
-            BufferedWriter bw = new BufferedWriter(
-                                                   new FileWriter(new File(Params.problemsFile)));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Params.problemsFile)));
             bw.write(json);
             bw.close();
-            //			System.out.println(json);
             return "Problem successfully uploaded";
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,8 +66,7 @@ public class Server {
             return "";
         }
         try {
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
+            List<Problem> allProblems = Reader.readGenericFormatProblems(Params.problemsFile);
             boolean allow = true;
             for(Problem prob : allProblems) {
                 if(prob.dataset.equals(datasetName) && !datasetName.equals("Unspecified")) {
@@ -78,8 +75,8 @@ public class Server {
                 }
             }
             if(!allow) return "Dataset name already taken, try something else";
-            List<Problem> uploadedProblems = new Gson().fromJson(allQuestions,
-                                                                 new TypeToken<List<Problem>>(){}.getType());
+            List<Problem> uploadedProblems = new Gson().fromJson(
+            		allQuestions, new TypeToken<List<Problem>>(){}.getType());
             for(Problem prob : uploadedProblems) {
                 prob.dataset = datasetName;
                 prob.fold = -1;
@@ -87,11 +84,9 @@ public class Server {
             allProblems.addAll(uploadedProblems);
             Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
             String json = gson.toJson(allProblems);
-            BufferedWriter bw = new BufferedWriter(
-                                                   new FileWriter(new File(Params.problemsFile)));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File(Params.problemsFile)));
             bw.write(json);
             bw.close();
-            //			System.out.println(json);
             return "Dataset successfully uploaded, "+uploadedProblems.size()+
             " new problems added";
         } catch (Exception e) {
@@ -100,8 +95,7 @@ public class Server {
         }
     }
     
-    public String viewFolds(String datasetName,
-                            String templateOverlap, String lexicalOverlap) {
+    public String viewFolds(String datasetName, String templateOverlap, String lexicalOverlap) {
         if(datasetName.trim().equals("") && templateOverlap.trim().equals("") &&
            lexicalOverlap.trim().equals("")) {
             return "";
