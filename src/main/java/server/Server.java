@@ -31,7 +31,6 @@ public class Server {
             Problem prob = new Problem();
             prob.dataset = "Unspecified";
             prob.iIndex = -1;
-            prob.fold = -1;
             prob.sQuestion = question.trim();
             prob.lEquations= new ArrayList<>();
             for(String eq : equations.split("\n")) {
@@ -79,7 +78,6 @@ public class Server {
             		allQuestions, new TypeToken<List<Problem>>(){}.getType());
             for(Problem prob : uploadedProblems) {
                 prob.dataset = datasetName;
-                prob.fold = -1;
             }
             allProblems.addAll(uploadedProblems);
             Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
@@ -131,8 +129,6 @@ public class Server {
             XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
             serverConfig.setEnabledForExtensions(true);
             serverConfig.setContentLengthOptional(false);
-            //			serverConfig.setKeepAliveEnabled(true);
-            //			boolean res = serverConfig.isKeepAliveEnabled();
             webServer.start();
             System.out.println("Started successfully.");
             System.out.println("Accepting requests. (Halt program to stop.)");
