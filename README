@@ -20,7 +20,7 @@
  4. php -S localhost:5000 (starts webserver, should be replaced by a 
     better web server for deployment)
 
- 5. Install mysql server, and start it with 
+ 5. Start MySQL database with 
 
     mysql.server start
 
