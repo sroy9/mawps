@@ -2,8 +2,10 @@ package server;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import structure.Problem;
@@ -15,6 +17,7 @@ public class Database {
 	static final String USER = "root";
 	static final String PASS = "";
 
+	// To be run once to create the table
 	public static void initDatabase() {
 	   Connection conn = null;
 	   Statement stmt = null;
@@ -40,8 +43,8 @@ public class Database {
 	      sql = "CREATE TABLE problems ("
 	      		+ "iIndex int NOT NULL AUTO_INCREMENT,"
 	      		+ "dataset varchar(255) NOT NULL,"
-	    		  	+ "sQuestion varchar(255) NOT NULL,"
-	    		  	+ "lEquations varchar(255) NOT NULL,"
+	    		  	+ "sQuestion TEXT NOT NULL,"
+	    		  	+ "lEquations varchar(255),"
 	    		  	+ "lSolutions varchar(255) NOT NULL,"
 	    		  	+ "PRIMARY KEY (iIndex))";
 	      stmt.executeUpdate(sql);
@@ -68,7 +71,7 @@ public class Database {
 	    System.out.println("Goodbye!");
 	 }//end main
 	
-	public static void addSingleProblem(Problem prob) {
+	public static void add(Problem prob) {
 	   Connection conn = null;
 	   Statement stmt = null;
 	   try{
@@ -81,23 +84,19 @@ public class Database {
 	      stmt = conn.createStatement();
 
 	      //STEP 4: Execute a query
-	      System.out.println("Creating database ...");		      
-	      String sql = "CREATE DATABASE PROBLEMS";
-	      stmt.executeUpdate(sql);
-	      System.out.println("Database created successfully ...");
-	      
-	      sql = "USE PROBLEMS";
+	      String sql = "USE PROBLEMS";
 	      stmt.executeUpdate(sql);
 	      System.out.println("Using database ...");
 	      
-	      sql = "INSERT INTO TABLE problems (dataset, sQuestion, lEquations, lSolutions) "
-	      		+ "VALUES ("
-	    		  	+ prob.dataset + ","
-	    		  	+ prob.sQuestion + ","
-	    		  	+ joinString(prob.lEquations) + ","
-	    		  	+ joinDouble(prob.lSolutions) + ")";
+	      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions) "
+	      		+ "VALUES ('"
+	    		  	+ prob.dataset + "','"
+	    		  	+ prob.sQuestion.replaceAll("'", "''") + "','"
+	    		  	+ joinString(prob.lEquations) + "','"
+	    		  	+ joinDouble(prob.lSolutions) + "')";
+	      System.out.println(sql);
 	      stmt.executeUpdate(sql);
-	      System.out.println("Table created successfully...");
+	      System.out.println("Problem inserted successfully...");
 	   }catch(SQLException se){
 	      //Handle errors for JDBC
 	      se.printStackTrace();
@@ -118,6 +117,120 @@ public class Database {
 	       }//end finally try
 	    }//end try
 	    System.out.println("Goodbye!");
+	 }//end main
+	
+	public static void add(List<Problem> probs) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	      System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(SQL_URL, USER, PASS);
+	      stmt = conn.createStatement();
+
+	      //STEP 4: Execute a query
+	      String sql = "USE PROBLEMS";
+	      stmt.executeUpdate(sql);
+	      System.out.println("Using database ...");
+	      
+	      for(Problem prob : probs) {
+		      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions) "
+		      		+ "VALUES ('"
+		    		  	+ prob.dataset + "','"
+		    		  	+ prob.sQuestion.replaceAll("'", "''") + "','"
+		    		  	+ joinString(prob.lEquations) + "','"
+		    		  	+ joinDouble(prob.lSolutions) + "')";
+		      System.out.println(sql);
+		      stmt.executeUpdate(sql);
+	      }
+	      System.out.println("Dataset inserted successfully...");
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{//finally block used to close resources
+	      try{
+	          if(stmt!=null)
+	             stmt.close();
+	       }catch(SQLException se2){
+	       }// nothing we can do
+	       try{
+	          if(conn!=null)
+	             conn.close();
+	       }catch(SQLException se){
+	          se.printStackTrace();
+	       }//end finally try
+	    }//end try
+	    System.out.println("Goodbye!");
+	 }//end main
+	
+	public static List<Problem> get (String dataset) {
+	   Connection conn = null;
+	   Statement stmt = null;
+	   List<Problem> probs = new ArrayList<>();
+	   try{
+	      //STEP 2: Register JDBC driver
+	      Class.forName("com.mysql.jdbc.Driver");
+
+	      //STEP 3: Open a connection
+	      System.out.println("Connecting to database...");
+	      conn = DriverManager.getConnection(SQL_URL, USER, PASS);
+	      stmt = conn.createStatement();
+
+	      //STEP 4: Execute a query
+	      String sql = "USE PROBLEMS";
+	      stmt.executeUpdate(sql);
+	      System.out.println("Using database ...");
+	      
+	      sql = "SELECT * FROM problems ";
+	      if(dataset != null && !dataset.trim().equals("")) {
+	    	  	sql += "WHERE dataset='"+dataset+"'";
+	      }
+	      System.out.println(sql);
+	      ResultSet rs = stmt.executeQuery(sql);
+	      //STEP 5: Extract data from result set
+	      while(rs.next()){
+	    	  	Problem prob = new Problem();
+	    	  	prob.dataset = rs.getString("dataset");
+	    	  	prob.iIndex = rs.getInt("iIndex");
+	    	  	prob.sQuestion = rs.getString("sQuestion");
+	    	  	prob.lEquations = new ArrayList<>();
+	    	  	for(String eq : rs.getString("lEquations").split("\\|\\|\\|")) {
+	    	  		prob.lEquations.add(eq);
+	    	  	}
+	    	  	prob.lSolutions = new ArrayList<>();
+	    	  	for(String ans : rs.getString("lSolutions").split("\\|\\|\\|")) {
+	    	  		prob.lSolutions.add(Double.parseDouble(ans.trim()));
+	    	  	}
+	    	  	probs.add(prob);
+	      }
+	      rs.close();
+	   }catch(SQLException se){
+	      //Handle errors for JDBC
+	      se.printStackTrace();
+	   }catch(Exception e){
+	      //Handle errors for Class.forName
+	      e.printStackTrace();
+	   }finally{//finally block used to close resources
+	      try{
+	          if(stmt!=null)
+	             stmt.close();
+	       }catch(SQLException se2){
+	       }// nothing we can do
+	       try{
+	          if(conn!=null)
+	             conn.close();
+	       }catch(SQLException se){
+	          se.printStackTrace();
+	       }//end finally try
+	    }//end try
+	    System.out.println("Goodbye!");
+	    return probs;
 	 }//end main
 	
 	public static String joinString(List<String> arr) {
@@ -141,4 +254,5 @@ public class Database {
 	public static void main(String args[]) {
 		initDatabase();
 	}
+	
 }

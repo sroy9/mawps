@@ -6,7 +6,7 @@
  First, you will need to install
  1. Maven  (for server code)
  2. PHP 5.4.0 or higher  (for the web server)
-
+ 3. MySql database
 
  Once you cloned the repo, run the following commands under
  dataset/ folder :
@@ -17,10 +17,16 @@
 
  3. sh startServer.sh  (starts java xmlrpc server)
 
- 4. php -S localhost:5000
+ 4. php -S localhost:5000 (starts webserver, should be replaced by a 
+    better web server for deployment)
 
- 5. Create a file data/problems.txt, and add an empty json list to it ("[]").
-    (This is a bit hacky, we can change it later)
+ 5. Install mysql server, and start it with 
+
+    mysql.server start
+
+ 6. To initialize database, run
+
+    sh initDatabase.sh
 
  The server is now live, and can accept questions, and show existing 
  questions. Open your browser and migrate to 
