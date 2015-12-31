@@ -3,3 +3,5 @@ target/*
 data/*
 log/*
 /target/
+ace*
+scratch.txt

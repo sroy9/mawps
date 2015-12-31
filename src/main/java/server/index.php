@@ -69,12 +69,14 @@ class xmlrpc_client {
 	      	<div style="width: 1000px; float: left;">
             	  <form method="post" action="index_output.php">
               Dataset <input type="text" name="dataset" size="10">
-              &nbsp; &nbsp; &nbsp; Size <input type="text" name="size" size="10">
-              &nbsp; &nbsp; &nbsp; Reduce Lexical Overlap <input type="checkbox" 
+              &nbsp; &nbsp; &nbsp; Size <input type="text" name="size" size="10"><br \><br \> 
+              Reduce Lexical Overlap <input type="checkbox" 
               name="reduceLexOverlap" value="Y"> 
               &nbsp; &nbsp; &nbsp; Reduce Template Overlap <input type="checkbox" 
               name="reduceTemplateOverlap" value="Y">
-              &nbsp; &nbsp; &nbsp; <input type="submit" style="width:100px" value="View" size="10">
+              &nbsp; &nbsp; &nbsp; Grammatically Correct <input type="checkbox" 
+              name="grammarCheck" value="Y"> <br \><br \>
+              <input type="submit" style="width:100px" value="View" size="10">
             	  </form>
 			  <br \><br \>
            </div>

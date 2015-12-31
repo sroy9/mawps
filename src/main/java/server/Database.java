@@ -46,6 +46,7 @@ public class Database {
 	    		  	+ "sQuestion TEXT NOT NULL,"
 	    		  	+ "lEquations varchar(255),"
 	    		  	+ "lSolutions varchar(255) NOT NULL,"
+	    		  	+ "grammarCheck int NOT NULL,"
 	    		  	+ "PRIMARY KEY (iIndex))";
 	      stmt.executeUpdate(sql);
 	      System.out.println("Table created successfully...");
@@ -88,12 +89,13 @@ public class Database {
 	      stmt.executeUpdate(sql);
 	      System.out.println("Using database ...");
 	      
-	      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions) "
+	      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions, grammarCheck) "
 	      		+ "VALUES ('"
 	    		  	+ prob.dataset + "','"
 	    		  	+ prob.sQuestion.replaceAll("'", "''") + "','"
 	    		  	+ joinString(prob.lEquations) + "','"
-	    		  	+ joinDouble(prob.lSolutions) + "')";
+	    		  	+ joinDouble(prob.lSolutions) + "',"
+	    		  	+ prob.grammarCheck+")";
 	      System.out.println(sql);
 	      stmt.executeUpdate(sql);
 	      System.out.println("Problem inserted successfully...");
@@ -137,12 +139,13 @@ public class Database {
 	      System.out.println("Using database ...");
 	      
 	      for(Problem prob : probs) {
-		      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions) "
+		      sql = "INSERT INTO problems (dataset, sQuestion, lEquations, lSolutions, grammarCheck) "
 		      		+ "VALUES ('"
 		    		  	+ prob.dataset + "','"
 		    		  	+ prob.sQuestion.replaceAll("'", "''") + "','"
 		    		  	+ joinString(prob.lEquations) + "','"
-		    		  	+ joinDouble(prob.lSolutions) + "')";
+		    		  	+ joinDouble(prob.lSolutions) + "',"
+		    	    		+ prob.grammarCheck+")";
 		      System.out.println(sql);
 		      stmt.executeUpdate(sql);
 	      }
@@ -169,7 +172,7 @@ public class Database {
 	    System.out.println("Goodbye!");
 	 }//end main
 	
-	public static List<Problem> get (String dataset) {
+	public static List<Problem> get (String dataset, boolean gramCheck) {
 	   Connection conn = null;
 	   Statement stmt = null;
 	   List<Problem> probs = new ArrayList<>();
@@ -191,6 +194,10 @@ public class Database {
 	      if(dataset != null && !dataset.trim().equals("")) {
 	    	  	sql += "WHERE dataset='"+dataset+"'";
 	      }
+	      if(gramCheck) {
+	    	  	if(!sql.contains("WHERE")) sql += "WHERE grammarCheck=1";
+	    	  	else sql += " AND grammarCheck=1";
+	      }
 	      System.out.println(sql);
 	      ResultSet rs = stmt.executeQuery(sql);
 	      //STEP 5: Extract data from result set
@@ -207,6 +214,7 @@ public class Database {
 	    	  	for(String ans : rs.getString("lSolutions").split("\\|\\|\\|")) {
 	    	  		prob.lSolutions.add(Double.parseDouble(ans.trim()));
 	    	  	}
+	    	  	prob.grammarCheck = rs.getInt("grammarCheck");
 	    	  	probs.add(prob);
 	      }
 	      rs.close();

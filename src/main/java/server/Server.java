@@ -32,6 +32,7 @@ public class Server {
                 if(val.trim().equals("")) continue;
                 prob.lSolutions.add(Double.parseDouble(val.trim()));
             }
+            prob.grammarCheck = GrammarCheck.checkERG(prob.sQuestion);
             Database.add(prob);
             return "Problem successfully uploaded";
         } catch (Exception e) {
@@ -47,6 +48,7 @@ public class Server {
             		allQuestions, new TypeToken<List<Problem>>(){}.getType());
             for(Problem prob : uploadedProblems) {
                 prob.dataset = datasetName;
+                prob.grammarCheck = GrammarCheck.checkERG(prob.sQuestion);
             }
             Database.add(uploadedProblems);
             return "Dataset successfully uploaded, "+uploadedProblems.size()+
@@ -58,15 +60,17 @@ public class Server {
     }
     
     public String getDatasetWithProperties(String datasetName, String size, 
-    		String reduceLexOverlap, String reduceTemplateOverlap) {
+    		String reduceLexOverlap, String reduceTemplateOverlap, String grammarCheck) {
     		System.out.println("Called getDataset");
     		boolean lex = reduceLexOverlap.equals("Y") ? true : false;
     		boolean tmpl = reduceTemplateOverlap.equals("Y") ? true : false;
+    		boolean gc = grammarCheck.equals("Y") ? true : false;
         try {
         		int k = Integer.parseInt(size.trim());
-	        	String intro = "Dataset "+datasetName+" of size "+k+" with ReduceLexicalOverlap = "+
-	        			lex+" and "+"ReduceTemplateOverlap = "+tmpl+"\n\n\n";
-            List<Problem> allProbs = Database.get(datasetName);
+	        	String intro = "Dataset : "+datasetName+"\nSize : "+k+"\nReduceLexicalOverlap : "+
+	        			lex+"\nReduceTemplateOverlap : "+tmpl+"\nGrammatically Correct : "+gc+
+	        			"\n\n\n";
+            List<Problem> allProbs = Database.get(datasetName, gc);
             List<Problem> outProbs = MaxCoverage.selectByData(allProbs, k, lex, tmpl);
             Gson gson = new GsonBuilder().disableHtmlEscaping()
             		.setPrettyPrinting().create();

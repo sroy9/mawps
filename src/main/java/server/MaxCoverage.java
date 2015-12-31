@@ -33,6 +33,10 @@ public class MaxCoverage {
         repoToDataStructure(entireRepo);
         double lex = reduceLexOverlap ? 1.0 : 0.0;
         double tmpl = reduceTemplateOverlap ? 1.0 : 0.0;
+        if(lex < 0.001 && tmpl < 0.001) {
+        		lex = 0.5;
+        		tmpl = 1.0;
+        }
         select(k, lex, tmpl);
         List<Problem> selectedProblems = new ArrayList<>();
         for (int i = 0; i< selectedDocIndex.size(); i++) {

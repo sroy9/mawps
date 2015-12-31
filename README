@@ -7,7 +7,7 @@
  1. Maven  (for server code)
  2. PHP 5.4.0 or higher  (for the web server)
  3. MySql database
-
+ 
  Once you cloned the repo, run the following commands under
  dataset/ folder :
 
@@ -27,6 +27,11 @@
  6. To initialize database, run
 
     sh initDatabase.sh
+    
+  7. Download the ace parser (Linux x64 Binaries can be found here 
+  	 http://sweaglesw.org/linguistics/ace/ ) and the ERG 1214 grammar file 
+  	 (same link). Check the command in GrammarCheck.java for exact files
+  	 needed and their location.	  
 
  The server is now live, and can accept questions, and show existing 
  questions. Open your browser and migrate to 
