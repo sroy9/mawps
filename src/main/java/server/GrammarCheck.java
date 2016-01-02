@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 public class GrammarCheck{
 	
     public static int checkERG(String input) {
+    		input = input.trim();
         try {
         		String line;
             PrintWriter writer = new PrintWriter(new File("scratch.txt"), "UTF-8");
@@ -40,7 +41,7 @@ public class GrammarCheck{
     }        
         
   public static void main (String arg[]) {
-      String test = "I have to went to school.";
+      String test = "Jane buys an apple for $0.75 and pays with a $5.00 bill. How much change will she get?";
 //      try {
 //          	BufferedReader br = new BufferedReader(new FileReader("q.txt")); 
 //		    String line;

@@ -1,7 +1,9 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import structure.Problem;
 import utils.TemplateParser;
@@ -42,6 +44,17 @@ public class MaxCoverage {
         for (int i = 0; i< selectedDocIndex.size(); i++) {
             selectedProblems.add(entireRepo.get(selectedDocIndex.get(i)));
         }
+        // Compute lexical overlap
+        Set<String> allLemmas = new HashSet<String>();
+        for(List<String> doc : documentWords) {
+        		allLemmas.addAll(doc);
+        }
+        System.out.println("Fraction of words covered : "+
+        		selectedWords.size()*1.0/allLemmas.size());
+        Set<Integer> allTemplates = new HashSet<Integer>();
+        allTemplates.addAll(templateForDocuments);
+        System.out.println("Fraction of templates covered : "+
+        		UsedTemplates.size()*1.0/allTemplates.size());
         return selectedProblems;
     }
 
