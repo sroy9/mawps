@@ -1,15 +1,23 @@
 package utils;
 
-import java.util.LinkedList;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import edu.stanford.nlp.ling.CoreAnnotations.LemmaAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.HasWord;
+import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
+import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.util.CoreMap;
 
 public class StanfordLemmatizer {
@@ -28,9 +36,9 @@ public class StanfordLemmatizer {
         this.pipeline = new StanfordCoreNLP(props);
     }
 
-    public List<String> lemmatize(String documentText)
+    public Set<String> lemmatize(String documentText)
     {
-        List<String> lemmas = new LinkedList<String>();
+        Set<String> lemmas = new HashSet<String>();
 
         // create an empty Annotation just with the given text
         Annotation document = new Annotation(documentText);
@@ -49,5 +57,21 @@ public class StanfordLemmatizer {
         }
 
         return lemmas;
+    }
+    
+    public static List<String> getSentences(String documentText) {
+	    	Reader reader = new StringReader(documentText);
+	    	DocumentPreprocessor dp = new DocumentPreprocessor(reader);
+	    	List<String> sentenceList = new ArrayList<String>();
+	    	for (List<HasWord> sentence : dp) {
+	    	   String sentenceString = Sentence.listToString(sentence);
+	    	   sentenceList.add(sentenceString.toString());
+	    	}
+	    	return sentenceList;
+    }
+    
+    public static void main(String args[]) {
+    		System.out.println(Arrays.asList(getSentences("I have 4 dogs. I also have 3.5 dollars.")));
+    		System.out.println(Arrays.asList(new StanfordLemmatizer().lemmatize("I have 4 dogs. I also have 3.5 dollars.")));
     }
 }

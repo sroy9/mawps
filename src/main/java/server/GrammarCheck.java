@@ -3,6 +3,8 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import utils.StanfordLemmatizer;
+
 public class GrammarCheck{
 	
     public static int checkERG(String input) {
@@ -10,8 +12,8 @@ public class GrammarCheck{
         try {
         		String line;
             PrintWriter writer = new PrintWriter(new File("scratch.txt"), "UTF-8");
-            String[] tokens = input.split("(?<=[.?!])");
-	        for (String x: tokens){
+//            String[] tokens = input.split("(?<=[.?!])");
+	        for (String x: StanfordLemmatizer.getSentences(input)){
 	            writer.println(x);
 	        }
 	        writer.close();
@@ -41,7 +43,7 @@ public class GrammarCheck{
     }        
         
   public static void main (String arg[]) {
-      String test = "Jane buys an apple for $0.75 and pays with a $5.00 bill. How much change will she get?";
+      String test = "I bought 2.2 pounds of apple for 5.78 dollars.";
 //      try {
 //          	BufferedReader br = new BufferedReader(new FileReader("q.txt")); 
 //		    String line;

@@ -6,20 +6,32 @@ import java.util.List;
 import java.util.Set;
 
 import structure.Problem;
+import utils.StanfordLemmatizer;
 import utils.TemplateParser;
 
 public class MaxCoverage {
     
     public static double lexiconWeight;
     public static double templateWeight;
-    public static double totalWords, totalTemplates;
     
-    public static List<List<String>> documentWords;
+    public static List<Set<String>> documentWords;
     public static List<Integer> usedTemplates;
     public static List<Integer> templateForDocuments;
     public static List<String> documents;
     public static List<Integer> selectedDocIndex;
     public static List<String> selectedWords;
+    
+    public static StanfordLemmatizer lemmatizer;
+    
+    static {
+    		lemmatizer = new StanfordLemmatizer();
+    		documentWords = new ArrayList<Set<String>>();
+    	    usedTemplates = new ArrayList<Integer>();
+    	    templateForDocuments = new ArrayList<Integer>();
+    	    documents = new ArrayList<String>();
+    	    selectedDocIndex = new ArrayList<Integer>();
+    	    selectedWords = new ArrayList<String>();
+    }
     
     public static void main (String argv[])
     {    
@@ -41,10 +53,10 @@ public class MaxCoverage {
             selectedProblems.add(entireRepo.get(selectedDocIndex.get(i)));
         }
         // Compute lexical overlap
-        System.out.println("Fraction of words covered : "+
-        		selectedWords.size()*1.0/totalWords);
-        System.out.println("Fraction of templates covered : "+
-        		usedTemplates.size()*1.0/totalTemplates);
+        System.out.println("Lexical Variety : "+selectedWords.size()*1.0/k);
+        System.out.println("Template Variety : "+usedTemplates.size()*1.0/k);
+        System.out.println("Lexical Overlap : "+k*1.0/selectedWords.size());
+        System.out.println("Template Overlap : "+k*1.0/usedTemplates.size());
         return selectedProblems;
     }
 
@@ -61,22 +73,14 @@ public class MaxCoverage {
             templateForDocuments.add(entireRepo.get(i).templateNumber);
         }
         for (int i = 0; i < documents.size(); i++) {
-            documentWords.add(new ArrayList<String>());
-            String[] temp = documents.get(i).split(" ");
-            for (int j = 0; j < temp.length; j++) {
-                documentWords.get(documentWords.size() - 1).add(temp[j].trim());
-            }
+            documentWords.add(new HashSet<String>());
+//            String[] temp = documents.get(i).split(" ");
+//            for (int j = 0; j < temp.length; j++) {
+//                documentWords.get(documentWords.size() - 1).add(temp[j].trim());
+//            }
+            documentWords.get(documentWords.size() - 1).addAll(
+            		lemmatizer.lemmatize(documents.get(i)));
         }
-        // Get unique templates and words
-        Set<String> allWords = new HashSet<String>();
-        for(List<String> doc : documentWords) {
-        		allWords.addAll(doc);
-        }
-        totalWords = allWords.size();
-        Set<Integer> allTemplates = new HashSet<Integer>();
-        allTemplates.addAll(templateForDocuments);
-        totalTemplates = allTemplates.size();
-        
     }
     
     public static void select(int k, double lW, double tW) {
@@ -86,15 +90,15 @@ public class MaxCoverage {
 	        	if(i == documents.size()) {
 	        		break;
 	        	}
-            int bestChoice = findNextBest();
+            int bestChoice = findNextBest(k);
             ChangeAccordingtoNextBase(bestChoice);
         }
     }
     
     public static void ChangeAccordingtoNextBase(int nextBestIndex) {
-        for (int i = 0; i < documentWords.get(nextBestIndex).size(); i++) {
-            if (!selectedWords.contains(documentWords.get(nextBestIndex).get(i))) {
-                selectedWords.add(documentWords.get(nextBestIndex).get(i));
+        for (String word : documentWords.get(nextBestIndex)) {
+            if (!selectedWords.contains(word)) {
+                selectedWords.add(word);
             }
         }
         if (!usedTemplates.contains(templateForDocuments.get(nextBestIndex))) {
@@ -103,7 +107,7 @@ public class MaxCoverage {
         selectedDocIndex.add(nextBestIndex);
     }
     
-    public static int findNextBest() {
+    public static int findNextBest(int k) {
         int bestIndex = -1;
         double maxCoverage = -1.0;
         int addingtemplateCost;
@@ -114,8 +118,8 @@ public class MaxCoverage {
             		addingtemplateCost = 0;
             }
             double coverage = 
-            		(lexiconWeight*findNumOfNewWords(documentWords.get(i))*1.0/totalWords) 
-            		+ (templateWeight *addingtemplateCost*1.0/totalTemplates);
+            		(lexiconWeight*findNumOfNewWords(documentWords.get(i))*1.0/k) 
+            		+ (templateWeight *addingtemplateCost*1.0/k);
             if (coverage > maxCoverage && !selectedDocIndex.contains(i)) {
                 bestIndex = i;
                 maxCoverage = coverage;
@@ -125,24 +129,14 @@ public class MaxCoverage {
         return bestIndex;
     }
     
-    public static int findNumOfNewWords(List<String> words) {
+    public static int findNumOfNewWords(Set<String> words) {
         Set<String> newWords = new HashSet<String>();
-        for (int i = 0; i < words.size(); i++) {
-            if (!selectedWords.contains(words.get(i))) {
-                newWords.add(words.get(i));
+        for (String word : words) {
+            if (!selectedWords.contains(word)) {
+                newWords.add(word);
             }
         }
         return newWords.size();
     }
-    
-//    public static int findIntersection(List<String> words) {
-//        int res = 0;
-//        for (int i = 0; i < words.size(); i++) {
-//            if (selectedWords.contains(words.get(i))) {
-//                res++;
-//            }
-//        }
-//        return res;
-//    }
     
 }

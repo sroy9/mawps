@@ -46,9 +46,14 @@ public class Server {
         try {
             List<Problem> uploadedProblems = new Gson().fromJson(
             		allQuestions, new TypeToken<List<Problem>>(){}.getType());
+            int count = 0;
             for(Problem prob : uploadedProblems) {
                 prob.dataset = datasetName;
                 prob.grammarCheck = GrammarCheck.checkERG(prob.sQuestion);
+                count++;
+                if(count % 10 == 0) {
+                		System.out.println("Problems checked : "+count);
+                }
             }
             Database.add(uploadedProblems);
             return "Dataset successfully uploaded, "+uploadedProblems.size()+
