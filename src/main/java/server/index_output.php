@@ -73,7 +73,7 @@ $client = new xmlrpc_client($rpc, true);
 $resp = $client->call('sample.getDatasetWithProperties', array($_POST['dataset'],
 		$_POST['size'],$_POST['reduceLexOverlap'],$_POST['reduceTemplateOverlap'],
 		$_POST['grammarCheck']));
-$resp = nl2br(str_replace(" ",'&nbsp&nbsp&nbsp&nbsp',$resp));
+$resp = nl2br(str_replace(" ",'&nbsp',$resp));
 echo $resp;
 
 ?>
