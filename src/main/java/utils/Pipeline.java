@@ -20,43 +20,52 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.process.DocumentPreprocessor;
 import edu.stanford.nlp.util.CoreMap;
 
-public class StanfordLemmatizer {
+public class Pipeline {
 
     protected StanfordCoreNLP pipeline;
-
-    public StanfordLemmatizer() {
+    
+    public Pipeline() {
         // Create StanfordCoreNLP object properties, with POS tagging
         // (required for lemmatization), and lemmatization
         Properties props;
         props = new Properties();
-        props.put("annotators", "tokenize, ssplit, pos, lemma");
-
+        props.put("annotators", "tokenize, ssplit");
         // StanfordCoreNLP loads a lot of models, so you probably
         // only want to do this once per execution
         this.pipeline = new StanfordCoreNLP(props);
     }
 
-    public Set<String> lemmatize(String documentText)
-    {
+    public Set<String> lemmatize(String documentText) {
         Set<String> lemmas = new HashSet<String>();
-
-        // create an empty Annotation just with the given text
         Annotation document = new Annotation(documentText);
-
-        // run all Annotators on this text
         this.pipeline.annotate(document);
-
-        // Iterate over all of the sentences found
+        List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+        for(CoreMap sentence: sentences) {
+            for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+                lemmas.add(token.get(LemmaAnnotation.class));
+            }
+        }
+        return lemmas;
+    }
+    
+    public Set<String> getUnigramsBigrams(String documentText) {
+        Set<String> ngrams = new HashSet<String>();
+        Annotation document = new Annotation(documentText);
+        this.pipeline.annotate(document);
         List<CoreMap> sentences = document.get(SentencesAnnotation.class);
         for(CoreMap sentence: sentences) {
             // Iterate over all tokens in a sentence
             for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
                 // Retrieve and add the lemma for each word into the list of lemmas
-                lemmas.add(token.get(LemmaAnnotation.class));
+                ngrams.add(token.originalText());
+            }
+            for (int i=0; i<sentence.get(TokensAnnotation.class).size()-1; ++i) {
+            		CoreLabel token1 = sentence.get(TokensAnnotation.class).get(i);
+            		CoreLabel token2 = sentence.get(TokensAnnotation.class).get(i+1);
+                ngrams.add(token1+"_"+token2);
             }
         }
-
-        return lemmas;
+        return ngrams;
     }
     
     public static List<String> getSentences(String documentText) {
@@ -68,10 +77,9 @@ public class StanfordLemmatizer {
 	    	   sentenceList.add(sentenceString.toString());
 	    	}
 	    	return sentenceList;
-    }
-    
+	}
     public static void main(String args[]) {
-    		System.out.println(Arrays.asList(getSentences("I have 4 dogs. I also have 3.5 dollars.")));
-    		System.out.println(Arrays.asList(new StanfordLemmatizer().lemmatize("I have 4 dogs. I also have 3.5 dollars.")));
+    		System.out.println(Arrays.asList(Pipeline.getSentences("I have 4 dogs. I also have 3.5 dollars.")));
+    		System.out.println(Arrays.asList(new Pipeline().getUnigramsBigrams("I have 4 dogs. I also have 3.5 dollars.")));
     }
 }

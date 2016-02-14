@@ -3,7 +3,7 @@ import java.io.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import utils.StanfordLemmatizer;
+import utils.Pipeline;
 
 public class GrammarCheck{
 	
@@ -13,7 +13,7 @@ public class GrammarCheck{
         		String line;
             PrintWriter writer = new PrintWriter(new File("scratch.txt"), "UTF-8");
 //            String[] tokens = input.split("(?<=[.?!])");
-	        for (String x: StanfordLemmatizer.getSentences(input)){
+	        for (String x: Pipeline.getSentences(input)){
 	            writer.println(x);
 	        }
 	        writer.close();
