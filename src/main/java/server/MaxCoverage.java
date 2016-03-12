@@ -21,29 +21,17 @@ public class MaxCoverage {
     
     public static List<Set<String>> documentWords;
     public static Map<IntPair, Double> pairwiseSim;
-//    public static List<Integer> usedTemplates;
     public static List<Integer> templateForDocuments;
     public static List<String> documents;
     public static List<Integer> selectedDocIndex;
-//    public static List<String> selectedWords;
     
     static {
     		pipeline = new Pipeline();
     		documentWords = new ArrayList<Set<String>>();
-//    	    usedTemplates = new ArrayList<Integer>();
     	    templateForDocuments = new ArrayList<Integer>();
     	    documents = new ArrayList<String>();
     	    selectedDocIndex = new ArrayList<Integer>();
-//    	    selectedWords = new ArrayList<String>();
     	    pairwiseSim = new HashMap<IntPair, Double>();
-    }
-    
-    public static void main (String argv[])
-    {    
-//		selectByData(entireRepo, k, reduceLexOverlap, reduceTemplateOverlap) 
-//    	--> problems are given as an input
-//		(entireRepo == the problem set, k == number of documents you wish to select, 
-//    	reduceLexOverlap & reduceTemplateOverlap == 2 boolean values)
     }
     
     public static List<Problem> selectByData(List<Problem> entireRepo, int k, 
@@ -64,11 +52,9 @@ public class MaxCoverage {
 
     public static void repoToDataStructure(List<Problem> entireRepo) {
     		documentWords.clear();
-//        usedTemplates.clear();
         templateForDocuments.clear();
         documents.clear();
         selectedDocIndex.clear();
-//        selectedWords.clear();
         pairwiseSim.clear();
         TemplateParser.populateTemplateIndexes(entireRepo);
         for (int i = 0; i < entireRepo.size(); i++) {
@@ -97,20 +83,8 @@ public class MaxCoverage {
 	        		break;
 	        	}
             int bestChoice = findNextBest(k);
-            ChangeAccordingtoNextBase(bestChoice);
+            selectedDocIndex.add(bestChoice);
         }
-    }
-    
-    public static void ChangeAccordingtoNextBase(int nextBestIndex) {
-//        for (String word : documentWords.get(nextBestIndex)) {
-//            if (!selectedWords.contains(word)) {
-//                selectedWords.add(word);
-//            }
-//        }
-//        if (!usedTemplates.contains(templateForDocuments.get(nextBestIndex))) {
-//            usedTemplates.add(templateForDocuments.get(nextBestIndex));
-//        }
-        selectedDocIndex.add(nextBestIndex);
     }
     
     public static int findNextBest(int k) {
@@ -131,22 +105,13 @@ public class MaxCoverage {
         return bestIndex;
     }
     
-//    public static int findNumOfNewWords(Set<String> words) {
-//        Set<String> newWords = new HashSet<String>();
-//        for (String word : words) {
-//            if (!selectedWords.contains(word)) {
-//                newWords.add(word);
-//            }
-//        }
-//        return newWords.size();
-//    }
-    
     public static double getSim(Set<String> set1, Set<String> set2) {
-    		double intersect = 0;
+    		double intersect = 0, union = set2.size();
     		for(String str : set1) {
     			if(set2.contains(str)) intersect++;
+    			if(!set2.contains(str)) union++;
     		}
-    		return intersect / (Math.min(set1.size(), set2.size())+0.001);
+    		return intersect / (union+0.001);
     }
     
     public static double getAvgLexSimWithSelectedDocs(int index) {
