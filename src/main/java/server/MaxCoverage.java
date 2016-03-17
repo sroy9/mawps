@@ -140,7 +140,7 @@ public class MaxCoverage {
 				totalSim+=pairwiseSim.get(new IntPair(i, j)); 
 			}
 		}
-		return (totalSim*2)/(selectedDocIndex.size()*(selectedDocIndex.size()-1)+0.001);
+		return (totalSim)/(selectedDocIndex.size()*(selectedDocIndex.size()-1)+0.001);
     }
     
     public static double computeTmplOverlap() {
@@ -153,7 +153,7 @@ public class MaxCoverage {
 	    			}
 	    		}
 	    	}
-	    	return (totalSim*2)/(selectedDocIndex.size()*(selectedDocIndex.size()-1)+0.001);
+	    	return (totalSim)/(selectedDocIndex.size()*(selectedDocIndex.size()-1)+0.001);
     }
     
 }
