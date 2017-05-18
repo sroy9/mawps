@@ -1,13 +1,13 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import edu.illinois.cs.cogcomp.core.datastructures.IntPair;
+import org.apache.commons.io.FileUtils;
 import structure.Problem;
 import utils.Pipeline;
 import utils.TemplateParser;
@@ -51,7 +51,7 @@ public class MaxCoverage {
     }
 
     public static void repoToDataStructure(List<Problem> entireRepo) {
-    		documentWords.clear();
+        documentWords.clear();
         templateForDocuments.clear();
         documents.clear();
         selectedDocIndex.clear();
@@ -67,11 +67,11 @@ public class MaxCoverage {
             		pipeline.getUnigramsBigrams(documents.get(i)));
         }
         for(int i=0; i<documents.size(); ++i) {
-        		for(int j=0; j<documents.size(); ++j) {
-        			if(i==j) continue;
-        			pairwiseSim.put(new IntPair(i, j), getSim(
-        					documentWords.get(i), documentWords.get(j)));
-        		}
+            for(int j=0; j<documents.size(); ++j) {
+                if(i==j) continue;
+                pairwiseSim.put(new IntPair(i, j), getSim(
+                        documentWords.get(i), documentWords.get(j)));
+            }
         }
     }
     
@@ -154,6 +154,31 @@ public class MaxCoverage {
 	    		}
 	    	}
 	    	return (totalSim)/(selectedDocIndex.size()*(selectedDocIndex.size()-1)+0.001);
+    }
+
+    public static void main(String args[]) throws IOException {
+        String questionsFile = "questions.json";
+        String json = FileUtils.readFileToString(new File(questionsFile));
+        List<Problem> probs = new Gson().fromJson(json,
+                new TypeToken<List<Problem>>(){}.getType());
+//        List<Problem> lex = selectByData(probs, 746, true, false);
+        List<Problem> tmpl = selectByData(probs, 746, false, true);
+        List<Integer> indices = new ArrayList<>();
+        for(Problem prob : tmpl) {
+            indices.add(prob.iIndex);
+        }
+        Collections.shuffle(indices);
+        double n = indices.size()*1.0 / 5;
+        for(int i=0; i<5; ++i) {
+            String str = "";
+            int min = (int)(i*n);
+            int max = (int)((i+1)*n);
+            if(i == 4) max = indices.size();
+            for(int j=min; j<max; ++j) {
+                str += indices.get(j) + "\n";
+            }
+            FileUtils.writeStringToFile(new File("fold"+i+".txt"), str);
+        }
     }
     
 }
