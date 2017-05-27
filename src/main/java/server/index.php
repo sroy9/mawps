@@ -55,7 +55,7 @@ class xmlrpc_client {
     <!-- end #header -->
     <div id="menu">
     <ul>
-    <li><a href="index.php">View / Create Folds</a></li>
+    <li><a href="index.php">Create Dataset</a></li>
     <li><a href="addsingle.php">Add a Problem</a></li>
     <li><a href="adddataset.php">Add a Dataset</a></li>
     </ul>
@@ -67,25 +67,18 @@ class xmlrpc_client {
 	  	<div id="content">
 	      <div class="entry">
 	      	<div style="width: 1000px; float: left;">
-            	  <form method="post" 
-            	  action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>">
+            	  <form method="post" action="index_output.php">
               Dataset <input type="text" name="dataset" size="10">
-              &nbsp; &nbsp; &nbsp; Lexical Overlap <input type="text" name="lexicalOverlap" 
-              size="10">
-              &nbsp; &nbsp; &nbsp; Template Overlap <input type="text" name="templateOverlap" 
-              size="10">
-              &nbsp; &nbsp; &nbsp; <input type="submit" style="width:100px" value="View" size="10">
+              &nbsp; &nbsp; &nbsp; Size <input type="text" name="size" size="10"><br \><br \> 
+              Reduce Lexical Overlap <input type="checkbox" 
+              name="reduceLexOverlap" value="Y"> 
+              &nbsp; &nbsp; &nbsp; Reduce Template Overlap <input type="checkbox" 
+              name="reduceTemplateOverlap" value="Y">
+              &nbsp; &nbsp; &nbsp; Grammatically Correct <input type="checkbox" 
+              name="grammarCheck" value="Y"> <br \><br \>
+              <input type="submit" style="width:100px" value="View" size="10">
             	  </form>
 			  <br \><br \>
-<?php
-$rpc = "http://localhost:8082"; 
-$client = new xmlrpc_client($rpc, true);
-$resp = $client->call('sample.viewFolds', array($_POST['dataset'],
-		$_POST['lexicalOverlap'],$_POST['templateOverlap']));
-$resp = nl2br(str_replace(" ",'&nbsp&nbsp&nbsp&nbsp',$resp));
-echo $resp;
-
-?>
            </div>
           </div> 
 	    </div>

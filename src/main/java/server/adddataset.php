@@ -68,7 +68,7 @@ class xmlrpc_client {
 	  	<div id="content">
 	      <div class="entry">
 	      	<div style="width: 580px; float: left;">
-		      <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']);?>">
+		      <form method="post" action="adddataset_output.php">
               Name <br \> <br \>	
               <textarea rows="1" cols="20" name="name" id="scroll"></textarea>
               <br \> <br \> <br \> 
@@ -78,12 +78,6 @@ class xmlrpc_client {
               <input type="submit" style="width:100px" value="Upload">
             	  </form>
 			  <br \><br \>
-<?php
-$rpc = "http://localhost:8082"; 
-$client = new xmlrpc_client($rpc, true);
-$resp = $client->call('sample.addDataset', array($_POST['name'],$_POST['data']));
-echo $resp;
-?>
            </div>
           </div> 
 	    </div>

@@ -43,7 +43,6 @@ class xmlrpc_client {
 }
 ?>
 
-
 <div id="wrapper">
   <div id="header-wrapper">
     <div id="header">
@@ -56,7 +55,7 @@ class xmlrpc_client {
     <!-- end #header -->
     <div id="menu">
     <ul>
-    <li><a href="index.php">View / Create Folds</a></li>
+    <li><a href="index.php">Create Dataset</a></li>
     <li><a href="addsingle.php">Add a Problem</a></li>
     <li><a href="adddataset.php">Add a Dataset</a></li>
     </ul>
@@ -67,20 +66,17 @@ class xmlrpc_client {
 	  <div id="page-bgbtm"> 
 	  	<div id="content">
 	      <div class="entry">
-	      	<div style="width: 580px; float: left;">
-		      <form method="post" action="addsingle_output.php">
-              Problem Text <br \> <br \>
-              <textarea rows="5" cols="60" name="question" id="scroll"></textarea>
-              <br \> <br \>	
-              Equations <br \> <br \>
-              <textarea rows="3" cols="60" name="equations" id="scroll"></textarea>
-              <br \> <br \>	
-              Answers <br \> <br \>
-              <textarea rows="3" cols="60" name="answers" id="scroll"></textarea>
-              <br \> <br \>
-              <input type="submit" style="width:100px" value="Upload">
-            	  </form>
-			  <br \><br \>
+	      	<div style="width: 1000px; float: left;">
+<?php
+$rpc = "http://localhost:8082"; 
+$client = new xmlrpc_client($rpc, true);
+$resp = $client->call('sample.getDatasetWithProperties', array($_POST['dataset'],
+		$_POST['size'],$_POST['reduceLexOverlap'],$_POST['reduceTemplateOverlap'],
+		$_POST['grammarCheck']));
+$resp = nl2br(str_replace(" ",'&nbsp',$resp));
+echo $resp;
+
+?>
            </div>
           </div> 
 	    </div>

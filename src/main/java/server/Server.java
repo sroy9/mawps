@@ -1,8 +1,5 @@
 package server;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,22 +14,15 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
-import reader.Reader;
 import structure.Problem;
-import utils.Params;
 
 public class Server {
     
-    public String addProblem(String question, String equations, String answers, String templates) {
-        if(question.trim().equals("") && equations.trim().equals("") &&
-           answers.trim().equals("") && templates.trim().equals("")) {
-            return "";
-        }
+    public String addProblem(String question, String equations, String answers) {
+		System.out.println("Called addProblem");
         try {
             Problem prob = new Problem();
             prob.dataset = "Unspecified";
-            prob.iIndex = -1;
-            prob.fold = -1;
             prob.sQuestion = question.trim();
             prob.lEquations= new ArrayList<>();
             for(String eq : equations.split("\n")) {
@@ -44,20 +34,8 @@ public class Server {
                 if(val.trim().equals("")) continue;
                 prob.lSolutions.add(Double.parseDouble(val.trim()));
             }
-            for(String val : templates.split("\n")) {
-                if(val.trim().equals("")) continue;
-                prob.templateNumber.add(Integer.parseInt(val.trim()));
-            }
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
-            allProblems.add(prob);
-            Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-            String json = gson.toJson(allProblems);
-            BufferedWriter bw = new BufferedWriter(
-                                                   new FileWriter(new File(Params.problemsFile)));
-            bw.write(json);
-            bw.close();
-            //			System.out.println(json);
+            prob.grammarCheck = GrammarCheck.checkERG(prob.sQuestion);
+            Database.add(prob);
             return "Problem successfully uploaded";
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,34 +44,20 @@ public class Server {
     }
     
     public String addDataset(String datasetName, String allQuestions) {
-        if(datasetName.trim().equals("") && allQuestions.trim().equals("")) {
-            return "";
-        }
+		System.out.println("Called addDataset");
         try {
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
-            boolean allow = true;
-            for(Problem prob : allProblems) {
-                if(prob.dataset.equals(datasetName) && !datasetName.equals("Unspecified")) {
-                    allow = false;
-                    break;
-                }
-            }
-            if(!allow) return "Dataset name already taken, try something else";
-            List<Problem> uploadedProblems = new Gson().fromJson(allQuestions,
-                                                                 new TypeToken<List<Problem>>(){}.getType());
+            List<Problem> uploadedProblems = new Gson().fromJson(
+            		allQuestions, new TypeToken<List<Problem>>(){}.getType());
+            int count = 0;
             for(Problem prob : uploadedProblems) {
                 prob.dataset = datasetName;
-                prob.fold = -1;
+                prob.grammarCheck = GrammarCheck.checkERG(prob.sQuestion);
+                count++;
+                if(count % 10 == 0) {
+                		System.out.println("Problems checked : "+count);
+                }
             }
-            allProblems.addAll(uploadedProblems);
-            Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-            String json = gson.toJson(allProblems);
-            BufferedWriter bw = new BufferedWriter(
-                                                   new FileWriter(new File(Params.problemsFile)));
-            bw.write(json);
-            bw.close();
-            //			System.out.println(json);
+            Database.add(uploadedProblems);
             return "Dataset successfully uploaded, "+uploadedProblems.size()+
             " new problems added";
         } catch (Exception e) {
@@ -144,22 +108,22 @@ public class Server {
         return uniqueProblems.size();
     }
     
-    public String viewFolds(String datasetName,
-                            String templateOverlap, String lexicalOverlap) {
-        if(datasetName.trim().equals("") && templateOverlap.trim().equals("") &&
-           lexicalOverlap.trim().equals("")) {
-            return "";
-        }
+    public String getDatasetWithProperties(String datasetName, String size, 
+    		String reduceLexOverlap, String reduceTemplateOverlap, String grammarCheck) {
+    		System.out.println("Called getDataset");
+    		boolean lex = reduceLexOverlap.equals("Y") ? true : false;
+    		boolean tmpl = reduceTemplateOverlap.equals("Y") ? true : false;
+    		boolean gc = grammarCheck.equals("Y") ? true : false;
         try {
-            List<Problem> allProbs = Reader.readGenericFormatProblems(Params.problemsFile);
-            List<Problem> outProbs = new ArrayList<>();
-            for(Problem prob : allProbs) {
-                if(prob.dataset.equals(datasetName) || datasetName.trim().equals("")) {
-                    outProbs.add(prob);
-                }
-            }
-            Gson gson = new GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create();
-            return gson.toJson(outProbs);
+        		int k = Integer.parseInt(size.trim());
+	        	String intro = "Dataset : "+datasetName+"\nSize : "+k+"\nReduceLexicalOverlap : "+
+	        			lex+"\nReduceTemplateOverlap : "+tmpl+"\nGrammatically Correct : "+gc+
+	        			"\n\n\n";
+            List<Problem> allProbs = Database.get(datasetName, gc);
+            List<Problem> outProbs = MaxCoverage.selectByData(allProbs, k, lex, tmpl);
+            Gson gson = new GsonBuilder().disableHtmlEscaping()
+            		.setPrettyPrinting().create();
+            return intro+gson.toJson(outProbs);
         } catch (Exception e) {
             e.printStackTrace();
             return "Sorry, there was a problem";
@@ -181,8 +145,6 @@ public class Server {
             XmlRpcServerConfigImpl serverConfig = (XmlRpcServerConfigImpl) xmlRpcServer.getConfig();
             serverConfig.setEnabledForExtensions(true);
             serverConfig.setContentLengthOptional(false);
-            //			serverConfig.setKeepAliveEnabled(true);
-            //			boolean res = serverConfig.isKeepAliveEnabled();
             webServer.start();
             System.out.println("Started successfully.");
             System.out.println("Accepting requests. (Halt program to stop.)");
