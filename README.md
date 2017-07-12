@@ -1,10 +1,10 @@
-# MAWPS : A Math Word Problem Repository Source Code
+# MAWPS : A Math Word Problem Repository
 
 This is the source code for setting up the MAWPS repository described in
 
-  MAWPS: A Math Word Problem Repository.
-  Rik Koncel-Kedziorski**, Subhro Roy**, Aida Amini, Nate Kushman and Hannaneh Hajishirzi.
-  NAACL 2016 (Short).
+  MAWPS: A Math Word Problem Repository.  
+  Rik Koncel-Kedziorski**, Subhro Roy**, Aida Amini, Nate Kushman and Hannaneh Hajishirzi.  
+  NAACL 2016 (Short).  
 
 The system is live at http://lang.ee.washington.edu/MAWPS/.
 
