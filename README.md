@@ -9,7 +9,7 @@ This is the source code for setting up the MAWPS repository described in
 The system is live at http://lang.ee.washington.edu/MAWPS/.
 
 
-### Creating Problem Subsets from the Terminal
+### Creating Low Lexical and Template Overlap Subsets from the Terminal
 
  You will need to install Maven.
  
