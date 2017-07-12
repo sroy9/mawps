@@ -1,9 +1,7 @@
 package server;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.xmlrpc.server.PropertyHandlerMapping;
 import org.apache.xmlrpc.server.XmlRpcServer;
@@ -66,47 +64,45 @@ public class Server {
         }
     }
 
-    public boolean ifDuplicate(Problem problem) {
-        try {
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
-            String sqTest = problem.sQuestion.replaceAll("[!?,;]",".");
-            while(sqTest.contains("  ")) {
-                sqTest = sqTest.replaceAll("  ", " ");
-            }
-            for (int i = 0; i < allProblems.size(); i++) {
-                String sq = allProblems.get(i).sQuestion.replaceAll("[!?,;]",".");
-                while(sq.contains("  ")) {
-                    sq = sq.replaceAll("  ", " ");
-                }
-                
-                if(sq.equals(sqTest)) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+//    public boolean ifDuplicate(Problem problem) {
+//        try {
+//            List<Problem> allProblems = Reader.readGenericFormatProblems(Params.problemsFile);
+//            String sqTest = problem.sQuestion.replaceAll("[!?,;]",".");
+//            while(sqTest.contains("  ")) {
+//                sqTest = sqTest.replaceAll("  ", " ");
+//            }
+//            for (int i = 0; i < allProblems.size(); i++) {
+//                String sq = allProblems.get(i).sQuestion.replaceAll("[!?,;]",".");
+//                while(sq.contains("  ")) {
+//                    sq = sq.replaceAll("  ", " ");
+//                }
+//
+//                if(sq.equals(sqTest)) {
+//                    return true;
+//                }
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return false;
+//    }
 
-    public Integer countProblemsWithoutDuplicates() {
-        Set<String> uniqueProblems = new HashSet<>(); 
-        try {
-            List<Problem> allProblems = Reader.readGenericFormatProblems(
-                                                                         Params.problemsFile);
-            for (int i = 0; i < allProblems.size(); i++) {
-                String sq = allProblems.get(i).sQuestion.replaceAll("[!?,;]",".");
-                while(sq.contains("  ")) {
-                    sq = sq.replaceAll("  ", " ");
-                }
-                uniqueProblems.add(sq);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return uniqueProblems.size();
-    }
+//    public Integer countProblemsWithoutDuplicates() {
+//        Set<String> uniqueProblems = new HashSet<>();
+//        try {
+//            List<Problem> allProblems = Reader.readGenericFormatProblems(Params.problemsFile);
+//            for (int i = 0; i < allProblems.size(); i++) {
+//                String sq = allProblems.get(i).sQuestion.replaceAll("[!?,;]",".");
+//                while(sq.contains("  ")) {
+//                    sq = sq.replaceAll("  ", " ");
+//                }
+//                uniqueProblems.add(sq);
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return uniqueProblems.size();
+//    }
     
     public String getDatasetWithProperties(String datasetName, String size, 
     		String reduceLexOverlap, String reduceTemplateOverlap, String grammarCheck) {

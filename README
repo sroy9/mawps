@@ -1,7 +1,33 @@
+# MAWPS : A Math Word Problem Repository Source Code
 
--------------------------------------------
-		README 
--------------------------------------------
+This is the source code for setting up the MAWPS repository described in
+
+  MAWPS: A Math Word Problem Repository.
+  Rik Koncel-Kedziorski**, Subhro Roy**, Aida Amini, Nate Kushman and Hannaneh Hajishirzi.
+  NAACL 2016 (Short).
+
+The system is live at http://lang.ee.washington.edu/MAWPS/.
+
+
+### Creating Problem Subsets from the Terminal
+
+ You will need to install Maven.
+ 
+ Once you cloned the repo, run the following commands under
+ dataset/ folder :
+
+ 1. mvn dependency:copy-dependencies (Downloads dependencies)
+
+ 2. mvn compile (Compiles java server code)
+
+ 3. java -cp target/classes:target/dependency/* server.MaxCoverage <questions_file> <num_output_questions> <reduce_lexical_overlap (true/false)> <reduce_template_overlap (true/false)> <output_file (optional)>
+
+Currently we do not support check for grammatical errors from the terminal. 
+  
+
+
+
+### Setting up MAWPS
 
  First, you will need to install
  1. Maven  (for server code)
@@ -37,3 +63,6 @@
  questions. Open your browser and migrate to 
 
  localhost:5000/src/main/java/server/index.php   
+
+
+

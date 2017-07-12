@@ -158,27 +158,42 @@ public class MaxCoverage {
     }
 
     public static void main(String args[]) throws IOException {
-        String questionsFile = "questions.json";
+        if(args.length < 4) {
+            System.out.println("Usage: java -cp target/classes:target/dependency/* " +
+                    "server.MaxCoverage " +
+                    "<questions_file> " +
+                    "<num_output_questions> " +
+                    "<reduce_lexical_overlap (true/false)> " +
+                    "<reduce_template_overlap (true/false)> " +
+                    "<output_file (optional)>");
+        }
+
+        String questionsFile = args[0];
+        int numOutputQuestions = Integer.parseInt(args[1]);
+        boolean reduceLex = Boolean.parseBoolean(args[2]);
+        boolean reduceTmpl = Boolean.parseBoolean(args[3]);
+        String outputFile = null;
+        if(args.length >= 5) {
+            outputFile = args[4];
+        }
         String json = FileUtils.readFileToString(new File(questionsFile));
         List<Problem> probs = new Gson().fromJson(json,
                 new TypeToken<List<Problem>>(){}.getType());
-//        List<Problem> lex = selectByData(probs, 746, true, false);
-        List<Problem> tmpl = selectByData(probs, 746, false, true);
+        List<Problem> outputQuestions = selectByData(probs, numOutputQuestions, reduceLex, reduceTmpl);
         List<Integer> indices = new ArrayList<>();
-        for(Problem prob : tmpl) {
+        for(Problem prob : outputQuestions) {
             indices.add(prob.iIndex);
         }
         Collections.shuffle(indices);
-        double n = indices.size()*1.0 / 5;
-        for(int i=0; i<5; ++i) {
-            String str = "";
-            int min = (int)(i*n);
-            int max = (int)((i+1)*n);
-            if(i == 4) max = indices.size();
-            for(int j=min; j<max; ++j) {
-                str += indices.get(j) + "\n";
-            }
-            FileUtils.writeStringToFile(new File("fold"+i+".txt"), str);
+        String str = "";
+        for(int i=0; i<indices.size(); ++i) {
+            str += indices.get(i) + "\n";
+        }
+        if(args.length >= 5) {
+            FileUtils.writeStringToFile(new File(outputFile), str);
+            System.out.println("The selected problem indices are written to "+outputFile);
+        } else {
+            System.out.println("The selected problem indices are printed below\n"+str);
         }
     }
     
