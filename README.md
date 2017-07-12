@@ -22,9 +22,24 @@ The system is live at http://lang.ee.washington.edu/MAWPS/.
 
  3. java -cp target/classes:target/dependency/* server.MaxCoverage <questions_file> <num_output_questions> <reduce_lexical_overlap (true/false)> <reduce_template_overlap (true/false)> <output_file (optional)>
 
-Currently we do not support check for grammatical errors from the terminal. 
+Currently we do not support check for grammatical errors from the terminal. The questions file must have all the questions arranged in the following json format. 
+~~~~
+[
+  {
+    "iIndex": 1,
+    "sQuestion": "Joan found 70.0 seashells on the beach . She gave Sam some of her seashells . She has 27.0 seashells . How many seashells did she give to Sam ?",
+    "lEquations": [
+      "X=(70.0-27.0)"
+    ],
+    "lSolutions": [
+      43.0
+    ]
+  },
   
-
+...
+]
+~~~~
+iIndex is a unique integer identifier for a problem, sQuestion is the problem text, lEquations is the list of equations, and lSolutions is the list of answers.
 
 
 ### Setting up MAWPS
